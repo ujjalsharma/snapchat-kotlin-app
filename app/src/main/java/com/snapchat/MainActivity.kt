@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
                     mAuth.createUserWithEmailAndPassword(emailEditText?.text.toString(), passEditText?.text.toString()).addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
                             // Add to database
+                            FirebaseDatabase.getInstance().getReference().child("users").child(task.result?.user?.uid.toString()).child("email").setValue(emailEditText?.text.toString())
                             logIn()
                         } else {
                             Toast.makeText(this, "Login Failed! Try Again!", Toast.LENGTH_SHORT).show()
