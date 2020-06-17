@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -12,7 +13,9 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.jar.Manifest
@@ -88,12 +91,26 @@ class CreateSnapActivity : AppCompatActivity() {
         uploadTask.addOnFailureListener {
             // Handle unsuccessful uploads
             Toast.makeText(this, "Upload Failed!", Toast.LENGTH_SHORT).show()
-        }.addOnSuccessListener {
+        }.addOnSuccessListener { taskSnapshot ->
             // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
             // ...
+            FirebaseStorage.getInstance().getReference().child("images").child(imageName).downloadUrl.addOnSuccessListener {
+
+                val downloadURL = it
+
+                val intent = Intent(this, ChooseUsersActivity::class.java)
+                intent.putExtra("imageURL", downloadURL.toString())
+                intent.putExtra("imageName", imageName)
+                intent.putExtra("message", messageEditText?.text.toString())
+
+                startActivity(intent)
+
+            }.addOnFailureListener{
+
+            }
+
 
         }
-
     }
 
 
